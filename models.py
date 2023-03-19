@@ -1,8 +1,13 @@
 from . import db
 
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import (
+    check_password_hash, 
+    generate_password_hash
+)
 
-class User(db.Model):
+from flask_login.mixins import UserMixin
+
+class User(UserMixin, db.Model):
     __tablename__ = 'usuarios'
 
     id = db.Column(db.Integer, primary_key=True)
