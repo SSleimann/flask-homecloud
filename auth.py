@@ -7,8 +7,9 @@ from flask import (
     request,
     flash
 )
-
 from flask_login.utils import login_user, logout_user
+
+from sqlalchemy.exc import IntegrityError
 
 from .models import User
 from .forms import LoginForm, RegisterForm
@@ -45,7 +46,14 @@ def register():
         user.set_password(form.password.data)
         
         db.session.add(user)
-        db.session.commit()
+        
+        try:
+            db.session.commit()
+            
+        except IntegrityError:
+            db.session.rollback()
+            flash('This email or username already exists!')
+            return redirect(url_for('auth_bp.register'))
         
         flash('Register succesfully. You can login!')
         

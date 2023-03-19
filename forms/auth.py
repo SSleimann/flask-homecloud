@@ -43,22 +43,3 @@ class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(1, 20)])
     submit = SubmitField('Register')
     
-    def validate(self, extra_validators=None):
-        initial_validation = super().validate(extra_validators)
-        
-        if not initial_validation:
-            return False
-        
-        user_username: User = User.query.filter_by(username=self.username.data).first()
-        user_email: User = User.query.filter_by(email=self.email.data).first()
-        
-        if user_email:
-            self.submit.errors.append('This email are in use!')
-            return False
-        
-        if user_username:
-            self.submit.errors.append('This username are in use!')
-            return False
-        
-        return True 
-    
