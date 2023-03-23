@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% for file in files %}
+        <div style="border: 3px green solid;">
+            {{file.name}}
+        </div>
+    {% endfor %}
+
+    {% for folder in folders %}
+        <div style="border: 3px red solid;">
+            {{folder.name}}
+        
+            {% if '/main/cloud/private/' in req.url_rule.rule %}
+                {% set _, fld_path = folder.path.split('/private/', maxsplit=1) %}
+
+                <a href="{{ url_for('main_bp.cloud_private', path=fld_path ) }}">go</a>
+
+            {% else %}
+                {% set _, fld_path = folder.path.split('/public/', maxsplit=1) %}
+                {% set fld_path = 'user_{}/'.format(usr.username) + fld_path %}
+
+                <a href="{{ url_for('main_bp.cloud_public', path=fld_path ) }}">go</a>
+
+            {% endif %}
+        </div>
+    {% endfor %}
+</body>
+</html>

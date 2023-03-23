@@ -7,17 +7,17 @@ from flask import (
     request,
     flash
 )
-from flask_login.utils import login_user, logout_user
-
+from flask_login.utils import login_user, logout_user, login_required
 from sqlalchemy.exc import IntegrityError
 
+from . import db
 from .models import User
 from .forms import LoginForm, RegisterForm
-from . import db
 
 auth_bp = Blueprint('auth_bp', __name__,
                         template_folder='templates/auth',
                         url_prefix='/auth')
+
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -62,6 +62,7 @@ def register():
     return render_template('register.html', form=form)
 
 @auth_bp.route('/logout', methods=['GET', 'POST'])
+@login_required
 def logout():
     if request.method == 'POST':
         logout = request.form.get('logout', None)

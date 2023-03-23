@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 
 from wtforms import EmailField, PasswordField, SubmitField, StringField
-from wtforms.validators import Length, Email, DataRequired, EqualTo
+from wtforms.validators import Length, Email, DataRequired, EqualTo, Regexp
 
 from ..models import User
 
@@ -22,7 +22,11 @@ class LoginForm(FlaskForm):
         
         user: User = User.query.filter_by(email=self.email.data).first()
         
-        if not user and not user.check_password(self.password.data):
+        if not user:
+            self.submit.errors.append("Invalid user or password")
+            return False
+        
+        if not user.check_password(self.password.data):
             self.submit.errors.append("Invalid user or password")
             return False
         
@@ -40,6 +44,6 @@ class RegisterForm(FlaskForm):
         validators=[ DataRequired(), EqualTo('password') ]
     )
     
-    username = StringField('Username', validators=[DataRequired(), Length(1, 20)])
+    username = StringField('Username', validators=[DataRequired(), Length(1, 20), Regexp(r"^[\w.@+-]+\Z")])
     submit = SubmitField('Register')
     
