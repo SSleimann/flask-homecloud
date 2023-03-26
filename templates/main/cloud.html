@@ -7,6 +7,16 @@
     <title>Document</title>
 </head>
 <body>
+
+    <form action="{{ url_for('main_bp.cloud_create_dir', path=path) }}" method="POST">
+
+        <input type="hidden" name="next" value="{{req.full_path}}" />
+        {{form_create_dir.csrf_token}}
+        Name: {{form_create_dir.dir}}
+        Submit: {{form_create_dir.submit}}
+
+    </form>
+
     {% for file in files %}
         <div style="border: 3px green solid;">
             {{file.name}}

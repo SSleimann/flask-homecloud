@@ -1,57 +1,86 @@
 import os
 
-from flask import Blueprint, render_template, redirect, url_for, current_app, request, abort
+from flask import Blueprint, render_template, redirect, url_for, request, abort, flash
 from flask_login.utils import login_required, current_user
 
 from . import db
+from .utils import get_path_folders_and_files, is_own_path, get_user_path
+from .forms import CreateDirForm, FileUploadForm
 from .models import User
-from .utils import get_path_folders_and_files, is_private_path
-from .forms import CreateDirForm, FileUploadForm, SearchByUsernameForm
 
 main_bp = Blueprint('main_bp', __name__,
                         template_folder='templates/main',
                         url_prefix='/main')
 
-
-@main_bp.route('/')
-@login_required
-def index():
-    return f'HELLOw {current_user.username}'
-
 @main_bp.route('/cloud/private/', defaults={'path': ''}, methods=['GET', 'POST'])
-@main_bp.route('/cloud/private/<path:path>')
+@main_bp.route('/cloud/private/<path:path>', methods=['GET', 'POST'])
 @login_required
 def cloud_private(path):
-    path = os.path.join(current_user.get_private_user_path(), path, '')
+    _, dpath = get_user_path(path, 'private')
     
     try:
-        files, folders = get_path_folders_and_files(path)
+        files, folders = get_path_folders_and_files(dpath)
     except FileNotFoundError:
         abort(404, description='Folder not found!')
     
-    return render_template('cloud.html', files=files, folders=folders, req=request)
+    context = {
+        'files': files,
+        'folders': folders,
+        'req': request,
+        'usr': current_user,
+        'form_create_dir': CreateDirForm(),
+        'form_upload_file': FileUploadForm(),
+        'path': os.path.join('private', path, '')
+    }
+    
+    return render_template('cloud.html', **context)
 
 @main_bp.route('/cloud/public/', defaults={'path': ''}, methods=['GET', 'POST'])
-@main_bp.route('/cloud/public/<path:path>')
+@main_bp.route('/cloud/public/<path:path>', methods=['GET', 'POST'])
 @login_required
 def cloud_public(path):
-    if path.startswith('user_'):
-        spath = path.split('/', maxsplit=1)
-        
-        _, username = spath.pop(0).split('user_', maxsplit=1)
-        user = User.query.filter_by(username=username).first()
-        
-        path = spath[0]
-    
-    else:
-        user = current_user
-    
-    path = os.path.join(user.get_public_user_path(), path, '')
+    user, dpath = get_user_path(path, 'public')
     
     try:
-        files, folders = get_path_folders_and_files(path)
+        files, folders = get_path_folders_and_files(dpath)
     except FileNotFoundError:
         abort(404, description='Folder not found!')
     
-    return render_template('cloud.html', files=files, folders=folders, req=request, usr=user)
+    context = {
+        'files': files,
+        'folders': folders,
+        'req': request,
+        'usr': user,
+        'form_create_dir': CreateDirForm(),
+        'form_upload_file': FileUploadForm(),
+        'path': os.path.join('public', path, '')
+    }
+    
+    return render_template('cloud.html', **context)
+
+@main_bp.route('/cloud/create_dir/', defaults={'path': ''}, methods=['POST'])
+@main_bp.route('/cloud/create_dir/<path:path>', methods=['POST'])
+@login_required
+def cloud_create_dir(path):
+    form = CreateDirForm()
+    next = request.form.get('next', None)
+    
+    if next is None:
+        abort(400)
+        
+    if form.validate_on_submit():
+        status, path = path.split('/', maxsplit=1)
+        
+        _, dpath = get_user_path(path, status.lower())
+        new_dir_path = os.path.join(dpath, form.dir.data, '')
+        
+        try:
+            os.mkdir(new_dir_path)
+        except FileExistsError:
+            flash('This file already exists', 'error')
+        
+    else:
+        flash('Invalid!', 'error')
+        
+    return redirect(next)
 

@@ -1,2 +1,2 @@
-from .main import FileUploadForm, CreateDirForm, SearchByUsernameForm
+from .main import FileUploadForm, CreateDirForm
 from .auth import LoginForm, RegisterForm

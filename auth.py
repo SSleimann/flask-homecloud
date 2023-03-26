@@ -29,7 +29,7 @@ def login():
         login_user(user)
         flash('Login succesfully')
         
-        return redirect(url_for('main_bp.index'))
+        return redirect(url_for('main_bp.cloud_private'))
         
     return render_template('login.html', form=form)
 
@@ -73,6 +73,6 @@ def logout():
         logout_user()
         flash('Logout succesfully')
         
-        return redirect(url_for('main_bp.index'))
+        return redirect(url_for('auth_bp.login'))
         
     return render_template('logout.html')
