@@ -1,14 +1,15 @@
 import os
+
 import typing as t
+
+from flask import abort, url_for, redirect, current_app
+from flask_login import current_user
 
 from functools import wraps
 
-from flask import abort
-from flask_login import current_user
-
 from .models import User
 
-def get_path_folders_and_files(path):
+def get_path_folders_and_files(path: str) -> t.Tuple[t.List[os.DirEntry], t.List[os.DirEntry]]:
     files = []
     folders = []
     
@@ -18,8 +19,7 @@ def get_path_folders_and_files(path):
             
         else:
             files.append(f)
-        
-    
+            
     return files, folders
 
 def get_user_path(path: str, 
@@ -48,15 +48,18 @@ def get_user_path(path: str,
     return user, path
     
     
-def is_own_path(f):
+def is_own(user: User) -> None:
+    if user != current_user:
+        abort(404, description='Not found!')
+    
+def not_logged_required(f):
+    
     @wraps(f)
     def decorated_view(*args, **kwargs):
-        user_path = current_user.get_private_user_path().split(os.sep)
+        if current_user.is_authenticated:
+            return redirect(url_for('main_bp.index'))
         
-        if f'user{current_user.id}' != user_path[2]:
-            abort(404, description='Not found!')
-            
         return f(*args, **kwargs)
     
     return decorated_view
-        
+

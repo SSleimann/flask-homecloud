@@ -8,6 +8,13 @@
 </head>
 <body>
 
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-info">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+
     <form action="{{ url_for('main_bp.cloud_create_dir', path=path) }}" method="POST">
 
         <input type="hidden" name="next" value="{{req.full_path}}" />
@@ -16,6 +23,16 @@
         Submit: {{form_create_dir.submit}}
 
     </form>
+
+    <form action="{{ url_for('main_bp.cloud_upload_file', path=path) }}" enctype=multipart/form-data method="POST">
+
+        <input type="hidden" name="next" value="{{req.full_path}}" />
+        {{form_upload_file.csrf_token}}
+        File: {{form_upload_file.file}}
+        Submit: {{form_upload_file.submit}}
+
+    </form>
+
 
     {% for file in files %}
         <div style="border: 3px green solid;">

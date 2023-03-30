@@ -7,19 +7,22 @@ from flask import (
     request,
     flash
 )
+
 from flask_login.utils import login_user, logout_user, login_required
 from sqlalchemy.exc import IntegrityError
 
 from . import db
 from .models import User
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, LogoutForm
+from .utils import not_logged_required
 
 auth_bp = Blueprint('auth_bp', __name__,
                         template_folder='templates/auth',
-                        url_prefix='/auth')
+                        url_prefix='/auth',)
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
+@not_logged_required
 def login():
     form = LoginForm()
     
@@ -27,13 +30,14 @@ def login():
         user =  User.query.filter_by(email=form.email.data).first()
         
         login_user(user)
-        flash('Login succesfully')
+        flash('Has iniciado sesion correctamente')
         
         return redirect(url_for('main_bp.cloud_private'))
         
     return render_template('login.html', form=form)
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
+@not_logged_required
 def register():
     form = RegisterForm()
     
@@ -52,10 +56,10 @@ def register():
             
         except IntegrityError:
             db.session.rollback()
-            flash('This email or username already exists!')
+            flash('Este email o nombre de usuario ya esta en uso!')
             return redirect(url_for('auth_bp.register'))
         
-        flash('Register succesfully. You can login!')
+        flash('Te has registrado correctamente. Ya puedes iniciar sesion!')
         
         return redirect(url_for('auth_bp.login'))
     
@@ -64,15 +68,12 @@ def register():
 @auth_bp.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
-    if request.method == 'POST':
-        logout = request.form.get('logout', None)
-        
-        if not '_logout' == logout:
-            abort(400, description="Invalid logout")
-        
+    form = LogoutForm()
+    
+    if form.validate_on_submit():
         logout_user()
-        flash('Logout succesfully')
+        flash('Has salido de la sesion satisfactoriamente')
         
         return redirect(url_for('auth_bp.login'))
         
-    return render_template('logout.html')
+    return render_template('logout.html', form=form)

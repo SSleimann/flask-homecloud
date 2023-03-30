@@ -1,31 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% for field, errors in form.errors.items() %}
-        <div class="alert alert-error">
-            {{ form[field].label }}: {{ ', '.join(errors) }}
-        </div>
-    {% endfor %}
+{% extends 'auth/base.html' %}
+{% block title %} Registro {% endblock title%}
 
-    {% for message in get_flashed_messages() %}
-        <div class="alert alert-info">
-            {{ message }}
-        </div>
-    {% endfor %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='auth/css/register.css')}}">
+{% endblock %}
 
-    <form method="post">
-        {{form.csrf_token}}
-        email {{form.email}}
-        password {{form.password}}
-        passwd confirmation {{form.password_confirmation}}
-        username {{form.username}}
-        submit {{form.submit}}
-    </form>
-</body>
-</html>
+{% block form_content %}
+    <div class="form-sign w-100 m-auto">
+        
+        {% block form_errors_and_messages %}
+            {{ super() }}
+        {% endblock form_errors_and_messages %}
+
+        <form method="post">
+
+            <div class="text-center">
+                <h1 class="h3 mb-3 fw-bold p-4">Registro</h1>
+            </div>
+            
+            {{ form.hidden_tag() }}
+
+            <div class="row g-0 mb-2">
+                <div class="col-sm-5 me-sm-4 mb-1">
+                    <div class="form-floating">
+                        {{ form.username(class_="form-control") }}
+                        {{ form.username.label }}
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="form-floating">
+                        {{ form.email(class_="form-control") }}
+                        {{ form.email.label }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col">
+                <div class="form-floating mb-2">
+                    {{ form.password(class_="form-control") }}
+                    {{ form.password.label }}
+                </div>
+    
+                <div class="form-floating">
+                    {{ form.password_confirmation(class_="form-control") }}
+                    {{ form.password_confirmation.label }}
+                </div>
+            </div>
+
+            {{ form.submit(class_="w-100 btn btn-lg btn-primary") }}
+
+        </form>
+
+    </div>
+{% endblock form_content %}

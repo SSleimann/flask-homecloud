@@ -1,23 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% for message in get_flashed_messages() %}
-        <div class="alert alert-info">
-            {{ message }}
-        </div>
-    {% endfor %}
+{% extends 'auth/base.html' %}
+{% block title %} Salir de la sesion {% endblock title%}
 
-    <form method="post">
-        <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}" />
-        logout
-        <input id="logout" name="logout" type="hidden" value="_logout">
-        <button type="submit">Logout</button>
-    </form>
-</body>
-</html>
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='auth/css/logout.css')}}">
+{% endblock css %}
+
+{% block form_content %}
+    <div class="form-sign w-100 m-auto">
+        {% block form_errors_and_messages %}
+            {{ super() }}
+        {% endblock form_errors_and_messages %}
+
+        <form method="post">
+            <div class="text-center">
+                <h1 class="h3 mb-3 fw-bold p-4">Quieres salir de la sesión?</h1>
+            </div>
+
+            {{ form.hidden_tag() }}
+
+            {{ form.submit(class_="w-100 btn btn-lg btn-primary") }}
+
+        </form>
+    </div>
+
+{% endblock form_content %}

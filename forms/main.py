@@ -5,7 +5,7 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import Length, Regexp, DataRequired
 
 class FileUploadForm(FlaskForm):
-    file = FileField('Upload a file', validators=[FileRequired(), DataRequired()])
+    file = FileField('Upload a file', validators=[FileRequired()])
     submit = SubmitField('Submit')
     
 class CreateDirForm(FlaskForm):
