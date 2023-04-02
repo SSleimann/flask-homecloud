@@ -24,11 +24,21 @@
                     </div>
                 {% endfor %}
                 
-                {% for message in get_flashed_messages() %}
-                    <div class="alert alert-info text-center">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == 'error' %}
+                                <div class="col-sm-2 mb-2 me-2 alert alert-danger text-center text-break">
+                                    {{ message }}
+                                </div>
+                            {% else %}
+                                <div class="col-sm-2 mb-2 me-2 alert alert-info text-center text-break">
+                                    {{ message }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
 
             {% endblock form_errors_and_messages %}
         {% endblock form_content %}

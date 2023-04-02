@@ -3,8 +3,6 @@ from flask import (
     render_template, 
     redirect, 
     url_for, 
-    abort, 
-    request,
     flash
 )
 
@@ -19,7 +17,6 @@ from .utils import not_logged_required
 auth_bp = Blueprint('auth_bp', __name__,
                         template_folder='templates/auth',
                         url_prefix='/auth',)
-
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 @not_logged_required
@@ -56,7 +53,7 @@ def register():
             
         except IntegrityError:
             db.session.rollback()
-            flash('Este email o nombre de usuario ya esta en uso!')
+            flash('Este email o nombre de usuario ya esta en uso!', 'error')
             return redirect(url_for('auth_bp.register'))
         
         flash('Te has registrado correctamente. Ya puedes iniciar sesion!')
@@ -73,7 +70,7 @@ def logout():
     if form.validate_on_submit():
         logout_user()
         flash('Has salido de la sesion satisfactoriamente')
-        
+                
         return redirect(url_for('auth_bp.login'))
         
     return render_template('logout.html', form=form)

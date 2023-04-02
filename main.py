@@ -2,7 +2,7 @@ import os
 
 from werkzeug.utils import secure_filename
 
-from flask import Blueprint, render_template, redirect, request, abort, flash, url_for
+from flask import Blueprint, render_template, redirect, request, abort, flash
 from flask_login.utils import login_required, current_user
 
 from .utils import get_path_folders_and_files, is_own, get_user_path
@@ -21,15 +21,15 @@ def cloud_private(path):
     try:
         files, folders = get_path_folders_and_files(dpath)
     except FileNotFoundError:
-        abort(404, description='Folder not found!')
+        abort(404, description='Carpeta no encontrada!')
     
     context = {
         'files': files,
         'folders': folders,
         'req': request,
         'usr': current_user,
-        'form_create_dir': CreateDirForm(),
-        'form_upload_file': FileUploadForm(),
+        'form_create_dir': CreateDirForm(next=request.full_path),
+        'form_upload_file': FileUploadForm(next=request.full_path),
         'path': os.path.join('private', path, '')
     }
     
@@ -44,15 +44,17 @@ def cloud_public(path):
     try:
         files, folders = get_path_folders_and_files(dpath)
     except FileNotFoundError:
-        abort(404, description='Folder not found!')
+        abort(404, description='Carpeta no conseguida!')
+    
+    next = request.full_path
     
     context = {
         'files': files,
         'folders': folders,
         'req': request,
         'usr': user,
-        'form_create_dir': CreateDirForm(),
-        'form_upload_file': FileUploadForm(),
+        'form_create_dir': CreateDirForm(next=request.full_path),
+        'form_upload_file': FileUploadForm(next=request.full_path),
         'path': os.path.join('public', path, '')
     }
     
@@ -78,11 +80,12 @@ def cloud_create_dir(path):
         
         try:
             os.mkdir(new_dir_path)
+            flash('El directorio se creo con exito')
         except FileExistsError:
-            flash('This file already exists', 'error')
+            flash('Este archivo ya existe', 'error')
         
     else:
-        flash('Invalid!', 'error')
+        flash('Invalido!', 'error')
         
     return redirect(next)
 
@@ -107,9 +110,9 @@ def cloud_upload_file(path):
         is_own(user)
         
         file.save(fpath)
-        flash('Succesfully uploaded file!')
+        flash('Se ha subido con exito el archivo!')
         
     else:
-        flash('Invalid!', 'error')
+        flash('Invalido!', 'error')
         
     return redirect(next)
