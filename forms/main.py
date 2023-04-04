@@ -10,7 +10,7 @@ class FileUploadForm(FlaskForm):
         self.next = kwargs.pop('next', None)
     
     @property 
-    def next(self):
+    def nxt(self):
         return self.next
     
     file = FileField(
@@ -18,7 +18,7 @@ class FileUploadForm(FlaskForm):
         validators=[FileRequired()]
     )
     
-    next = HiddenField(default=next, name='next', id='next')
+    next = HiddenField(default=nxt, name='next', id='next')
     submit = SubmitField('Subir archivo')
     
     
@@ -28,7 +28,7 @@ class CreateDirForm(FlaskForm):
         self.next = kwargs.pop('next', None)
        
     @property 
-    def next(self):
+    def nxt(self):
         return self.next
     
     dir = StringField(
@@ -37,6 +37,9 @@ class CreateDirForm(FlaskForm):
         render_kw={'placeholder': 'Nombre del directorio'}
     )
     
-    next = HiddenField(default=next, name='next', id='next')
+    next = HiddenField(default=nxt, name='next', id='next')
     submit = SubmitField('Crear directorio')
+    
+class DeleteFileForm(FlaskForm):
+    submit = SubmitField('Eliminar archivo')
     

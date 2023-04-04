@@ -3,7 +3,7 @@
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="{{url_for('static',
-    filename='main/css/main.css')}}">
+    filename='css/main/main.css')}}">
 {% endblock %}
 
 {% block content %}
@@ -65,16 +65,14 @@
 
                 {% if '/main/cloud/private/' in req.url_rule.rule %}
 
-                {% set _, fld_path = folder.path.split('/private/', maxsplit=1)
-                %}
+                {% set _, fld_path = folder.path.split('/private/', maxsplit=1) %}
                 <a href="{{ url_for('main_bp.cloud_private', path=fld_path ) }}"
                     title="{{folder.name}}" class="h4 p-2 text-decoration-none
                     text-center">{{folder.name|truncate(16)}}</a>
 
                 {% else %}
 
-                {% set _, fld_path = folder.path.split('/public/', maxsplit=1)
-                %}
+                {% set _, fld_path = folder.path.split('/public/', maxsplit=1) %}
 
                 {% set fld_path = 'user_{}/'.format(usr.username) + fld_path %}
                 <a href="{{ url_for('main_bp.cloud_public', path=fld_path ) }}"
@@ -92,8 +90,19 @@
                 <img class="w-50 h-50 img-fluid mt-1" src="{{url_for('static',
                     filename='images/file-store.png')}}" alt="{{file.name}}">
 
-                <h1 class="h4 p-2 text-center">{{file.name|truncate(16)}}</h1>
-                <a href="#" class="btn btn-primary" title="{{file.name}}">Descargar</a>
+                <a href="{{ url_for('main_bp.cloud_download_file', filename=file.name, path=path ) }}" target="_blank" class="h4 p-2 text-decoration-none text-center" title="{{file.name}}">{{file.name|truncate(16)}}</a>
+                
+                {% if '/main/cloud/private/' in req.url_rule.rule %}
+
+                {% set filepath = path + file.name%}
+                <a href="{{ url_for('main_bp.cloud_delete_file', path=filepath ) }}" target="_blank" class="btn btn-primary" title="{{file.name}}">Eliminar archivo</a>
+
+                {% else %}
+
+                {% set filepath = path + file.name %}
+                <a href="{{ url_for('main_bp.cloud_delete_file', path=filepath) }}" target="_blank" class="btn btn-primary" title="{{file.name}}">Eliminar archivo</a>
+
+                {% endif %}
             </div>
         </div>
         {% endfor %}

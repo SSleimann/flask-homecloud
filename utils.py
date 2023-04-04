@@ -31,7 +31,7 @@ def get_user_path(path: str,
     
     if access == 'private':
         user = current_user
-        path = os.path.join(user.get_private_user_path(), path, '')
+        path = os.path.join(user.get_private_user_path(), path)
     
     else:
         if path.startswith('user_'):
