@@ -5,18 +5,26 @@ from werkzeug.utils import secure_filename
 from flask import Blueprint, render_template, redirect, request, abort, flash, url_for, send_from_directory
 from flask_login.utils import login_required, current_user
 
-from .utils import get_path_folders_and_files, is_own, get_user_path
+from .utils import get_path_folders_and_files, is_own, get_user_path, protected_path, encrypt_path
 from .forms import CreateDirForm, FileUploadForm, DeleteFileForm
+from .models import User
+from . import db
 
 main_bp = Blueprint('main_bp', __name__,
                         template_folder='templates/main',
                         url_prefix='/main')
 
-@main_bp.route('/cloud/private/', defaults={'path': ''})
+@main_bp.route('/cloud/public/', methods=['GET'])
+@login_required
+def cloud_public_redirect():
+    return redirect(url_for('main_bp.cloud_public', username=current_user.username))
+
+@main_bp.route('/cloud/private/', defaults={'path': '' })
 @main_bp.route('/cloud/private/<path:path>')
 @login_required
-def cloud_private(path):
-    _, dpath = get_user_path(path, 'private')
+@protected_path
+def cloud_private(path, encpath):
+    dpath = os.path.join(current_user.get_private_user_path(), path)
     
     try:
         files, folders = get_path_folders_and_files(dpath)
@@ -27,19 +35,23 @@ def cloud_private(path):
         'files': files,
         'folders': folders,
         'req': request,
-        'usr': current_user,
+        'user': current_user,
         'form_create_dir': CreateDirForm(next=request.full_path),
         'form_upload_file': FileUploadForm(next=request.full_path),
-        'path': os.path.join('private', path, '')
+        'path': encpath,
+        'status': 'private'
     }
     
     return render_template('cloud.html', **context)
 
-@main_bp.route('/cloud/public/', defaults={'path': ''}, methods=['GET', 'POST'])
-@main_bp.route('/cloud/public/<path:path>', methods=['GET', 'POST'])
+@main_bp.route('/cloud/public/<username>/path/', defaults={'path': ''}, methods=['GET', 'POST'])
+@main_bp.route('/cloud/public/<username>/path/<path:path>', methods=['GET', 'POST'])
 @login_required
-def cloud_public(path):
-    user, dpath = get_user_path(path, 'public')
+@protected_path
+def cloud_public(username, path, encpath):
+    user = db.one_or_404(db.select(User).filter_by(username=username))
+    
+    dpath = os.path.join(user.get_public_user_path(), path)
     
     try:
         files, folders = get_path_folders_and_files(dpath)
@@ -50,18 +62,20 @@ def cloud_public(path):
         'files': files,
         'folders': folders,
         'req': request,
-        'usr': user,
+        'user': user,
         'form_create_dir': CreateDirForm(next=request.full_path),
         'form_upload_file': FileUploadForm(next=request.full_path),
-        'path': os.path.join('public', path, '')
+        'path': encpath,
+        'status': 'public'
     }
     
     return render_template('cloud.html', **context)
 
-@main_bp.route('/cloud/create_dir/', defaults={'path': ''}, methods=['POST'])
-@main_bp.route('/cloud/create_dir/<path:path>', methods=['POST'])
+@main_bp.route('/cloud/create_dir/<status>/<username>/path/', defaults={'path': ''}, methods=['POST'])
+@main_bp.route('/cloud/create_dir/<status>/<username>/<path:path>', methods=['POST'])
 @login_required
-def cloud_create_dir(path):
+@protected_path
+def cloud_create_dir(status, username, path, encpath):
     form = CreateDirForm()
     next = request.form.get('next', None)
     
@@ -69,11 +83,13 @@ def cloud_create_dir(path):
         abort(400)
         
     if form.validate_on_submit():
-        status, path = path.split('/', maxsplit=1)
-        
-        user, dpath = get_user_path(path, status.lower())
+        user = db.one_or_404(db.select(User).filter_by(username=username), description='User not found!')
         is_own(user)
         
+        if not status in ['private', 'public']:
+            abort(404)
+        
+        dpath = get_user_path(user, status, path)
         new_dir_path = os.path.join(dpath, form.dir.data, '')
         
         try:
@@ -87,10 +103,11 @@ def cloud_create_dir(path):
         
     return redirect(next)
 
-@main_bp.route('/cloud/upload_file/', defaults={'path': ''}, methods=['POST'])
-@main_bp.route('/cloud/upload_file/<path:path>', methods=['POST'])
+@main_bp.route('/cloud/upload_file/<status>/<username>/path/', defaults={'path': ''}, methods=['POST'])
+@main_bp.route('/cloud/upload_file/<status>/<username>/path/<path:path>', methods=['POST'])
 @login_required
-def cloud_upload_file(path):
+@protected_path
+def cloud_upload_file(status, username, path, encpath):
     form = FileUploadForm()
     next = request.form.get('next', None)
     
@@ -98,14 +115,18 @@ def cloud_upload_file(path):
         abort(400)
     
     if form.validate_on_submit():
-        file = request.files['file']
+        user = db.one_or_404(db.select(User).filter_by(username=username), description='User not found!')
+        is_own(user)
+        
+        if not status in ['private', 'public']:
+            abort(404)
+        
+        dpath = get_user_path(user, status, path)
+        
+        file = form.file.data
         filename = secure_filename(file.filename)
         
-        status, path = path.split('/', maxsplit=1)
-        user, dpath = get_user_path(path, status.lower())
-        
         fpath = os.path.join(dpath, filename)
-        is_own(user)
         
         file.save(fpath)
         flash('Se ha subido con exito el archivo!')
@@ -115,25 +136,30 @@ def cloud_upload_file(path):
         
     return redirect(next)
 
-@main_bp.route('/cloud/delete_file/<path:path>', methods=['POST', 'GET'])
+@main_bp.route('/cloud/delete_file/<status>/<username>/path/', defaults={'path': ''}, methods=['GET', 'POST'])
+@main_bp.route('/cloud/delete_file/<status>/<username>/path/<path:path>', methods=['GET', 'POST'])
 @login_required
-def cloud_delete_file(path):
+@protected_path
+def cloud_delete_file(status, username, path, encpath):
     form = DeleteFileForm()
     
     if form.validate_on_submit():
-        status, path = path.split('/', maxsplit=1)
-        user, dpath = get_user_path(path, status.lower())
-        
+        user = db.one_or_404(db.select(User).filter_by(username=username), description='User not found!')
         is_own(user)
         
+        if not status in ['private', 'public']:
+            abort(404)
+        
+        fpath = get_user_path(user, status, path)
+        
+        redirect_url = url_for('main_bp.cloud_private') if status == 'private' else url_for('main_bp.cloud_public', username=user.username)
+        
         try:
-            os.remove(dpath)
+            os.remove(fpath)
             flash('Se ha eliminado con exito el archivo!')
         except FileNotFoundError:
             flash('Este archivo no existe!', 'error')
-
-        redirect_url = url_for('main_bp.cloud_private') if status.lower() == 'private' else url_for('main_bp.cloud_public')
-        
+            
         return redirect(redirect_url)
     
     context = {
@@ -142,11 +168,21 @@ def cloud_delete_file(path):
     
     return render_template('delete_file.html', **context)
 
-@main_bp.route('/cloud/download_file/<filename>/path', defaults={'path': ''})
-@main_bp.route('/cloud/download_file/<filename>/path/<path:path>')
+@main_bp.route('/cloud/download_file/<status>/<username>/path/', defaults={'path': ''})
+@main_bp.route('/cloud/download_file/<status>/<username>/path/<path:path>')
 @login_required
-def cloud_download_file(filename, path):
-    status, path = path.split('/', maxsplit=1)
-    _, dpath = get_user_path(path, status.lower())
+@protected_path
+def cloud_download_file(status, username, path, encpath):
+    user = db.one_or_404(db.select(User).filter_by(username=username), description='User not found!')
+    is_own(user)
+        
+    if not status in ['private', 'public']:
+         abort(404)
+        
+    dpath = get_user_path(user, status, path)
+    fpath, filename = dpath.rsplit('/', maxsplit=1)
     
-    return send_from_directory(dpath, filename, as_attachment=True)
+    if not os.path.exists(fpath):
+        abort(404, description='Este archivo no existe')
+    
+    return send_from_directory(fpath, filename, as_attachment=True)

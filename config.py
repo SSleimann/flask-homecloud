@@ -7,6 +7,7 @@ UPLOAD_FOLDER = 'media/uploads/'
 class Config(object):
     TESTING = False
     SECRET_KEY='megahipersecretkey'
+    PATH_KEY= b'TPe1E0rNoBfTNmt5UQZqkKEngepwwREyl4sxqS8eWH0='
 
 class DevelopmentConfig(Config):
     DEVELOPMENT = True

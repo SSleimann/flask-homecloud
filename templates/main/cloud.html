@@ -61,23 +61,19 @@
         <div class="col-md-8 mb-4 me-3 cd bg-white">
             <div class="d-flex flex-column align-items-center text-break">
                 <img class="w-50 h-50 mt-1" src="{{url_for('static',
-                    filename='images/folder.png')}}" alt="{{folder.name}}">
+                    filename='images/folder.png')}}" alt="{{folder.entry.name}}">
 
                 {% if '/main/cloud/private/' in req.url_rule.rule %}
-
-                {% set _, fld_path = folder.path.split('/private/', maxsplit=1) %}
-                <a href="{{ url_for('main_bp.cloud_private', path=fld_path ) }}"
-                    title="{{folder.name}}" class="h4 p-2 text-decoration-none
-                    text-center">{{folder.name|truncate(16)}}</a>
+                
+                <a href="{{ url_for('main_bp.cloud_private', path=folder.relpath ) }}"
+                    title="{{folder.entry.name}}" class="h4 p-2 text-decoration-none
+                    text-center">{{folder.entry.name|truncate(16)}}</a>
 
                 {% else %}
 
-                {% set _, fld_path = folder.path.split('/public/', maxsplit=1) %}
-
-                {% set fld_path = 'user_{}/'.format(usr.username) + fld_path %}
-                <a href="{{ url_for('main_bp.cloud_public', path=fld_path ) }}"
-                    title="{{folder.name}}" class="h4 p-2 text-decoration-none
-                    text-center">{{folder.name|truncate(16)}}</a>
+                <a href="{{ url_for('main_bp.cloud_public', path=folder.relpath, username=user.username ) }}"
+                    title="{{folder.entry.name}}" class="h4 p-2 text-decoration-none
+                    text-center">{{folder.entry.name|truncate(16)}}</a>
 
                 {% endif %}
             </div>
@@ -88,21 +84,11 @@
         <div class="col-md-8 mb-4 me-3 cd bg-white">
             <div class="d-flex flex-column align-items-center text-break">
                 <img class="w-50 h-50 img-fluid mt-1" src="{{url_for('static',
-                    filename='images/file-store.png')}}" alt="{{file.name}}">
+                    filename='images/file-store.png')}}" alt="{{file.entry.name}}">
 
-                <a href="{{ url_for('main_bp.cloud_download_file', filename=file.name, path=path ) }}" target="_blank" class="h4 p-2 text-decoration-none text-center" title="{{file.name}}">{{file.name|truncate(16)}}</a>
-                
-                {% if '/main/cloud/private/' in req.url_rule.rule %}
-
-                {% set filepath = path + file.name%}
-                <a href="{{ url_for('main_bp.cloud_delete_file', path=filepath ) }}" target="_blank" class="btn btn-primary" title="{{file.name}}">Eliminar archivo</a>
-
-                {% else %}
-
-                {% set filepath = path + file.name %}
-                <a href="{{ url_for('main_bp.cloud_delete_file', path=filepath) }}" target="_blank" class="btn btn-primary" title="{{file.name}}">Eliminar archivo</a>
-
-                {% endif %}
+                <a href="{{ url_for('main_bp.cloud_download_file', path=file.relpath, username=user.username, status=status ) }}" target="_blank" class="h4 p-2 text-decoration-none text-center" title="{{file.entry.name}}">{{file.entry.name|truncate(16)}}</a>
+                <a href="{{ url_for('main_bp.cloud_delete_file', path=file.relpath, username=user.username, status=status) }}" target="_blank" class="btn btn-primary" title="{{file.entry.name}}">Eliminar archivo</a>
+   
             </div>
         </div>
         {% endfor %}
@@ -121,8 +107,7 @@
                             data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form action="{{ url_for('main_bp.cloud_create_dir',
-                            path=path) }}" method="POST">
+                        <form action="{{ url_for('main_bp.cloud_create_dir', status=status, username=user.username, path=path) }}" method="POST">
                             {{ form_create_dir.hidden_tag() }}
 
                             {{ form_create_dir.dir(class_="form-control mt-2
@@ -147,7 +132,7 @@
                     </div>
                     <div class="modal-body">
                         <form action="{{ url_for('main_bp.cloud_upload_file',
-                            path=path) }}" enctype=multipart/form-data
+                            status=status, username=user.username, path=path) }}" enctype=multipart/form-data
                             method="POST">
                             {{form_upload_file.hidden_tag()}}
                             {{ form_upload_file.file(class_="form-control mt-2
