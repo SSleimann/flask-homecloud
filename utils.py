@@ -40,7 +40,6 @@ class EncriptedEntry(object):
         path = entry.path
         
         _, relpath = re.split('private/|public/', string=path, maxsplit=1)
-        
         relpath_encrypted = self._encrypt_path(relpath)
         
         return relpath_encrypted
@@ -58,7 +57,6 @@ def get_path_folders_and_files(path: str) -> t.Tuple[t.List[os.DirEntry], t.List
         
         if f.is_dir():
             folders.append(enc_dir)
-            
         else:
             files.append(enc_dir)
             

@@ -28,11 +28,11 @@
                     {% if messages %}
                         {% for category, message in messages %}
                             {% if category == 'error' %}
-                                <div class="col-sm-2 mb-2 me-2 alert alert-danger text-center text-break">
+                                <div class="col mb-2 me-2 alert alert-danger text-center text-break">
                                     {{ message }}
                                 </div>
                             {% else %}
-                                <div class="col-sm-2 mb-2 me-2 alert alert-info text-center text-break">
+                                <div class="col mb-2 me-2 alert alert-info text-center text-break">
                                     {{ message }}
                                 </div>
                             {% endif %}

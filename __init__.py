@@ -3,16 +3,17 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_required
 
+from .config import DevelopmentConfig
+
 # create the extension
 db = SQLAlchemy()
 csrf = CSRFProtect()
 login_manager = LoginManager()
 
-def create_app():
+def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__, static_folder='static', static_url_path='/static')
     
-    from .config import DevelopmentConfig
-    app.config.from_object(DevelopmentConfig())
+    app.config.from_object(config_class)
     
     #initialization
     db.init_app(app)

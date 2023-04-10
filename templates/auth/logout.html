@@ -2,7 +2,7 @@
 {% block title %} Salir de la sesion {% endblock title%}
 
 {% block css %}
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/auth/llogout.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/auth/logout.css')}}">
 {% endblock css %}
 
 {% block form_content %}
@@ -13,7 +13,7 @@
 
         <form method="post">
             <div class="text-center">
-                <h1 class="h3 mb-3 fw-bold p-4">Quieres salir de la sesión?</h1>
+                <h1 class="h3 mb-3 fw-bold p-4">Quieres salir de la sesion?</h1>
             </div>
 
             {{ form.hidden_tag() }}
