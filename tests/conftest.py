@@ -1,4 +1,6 @@
+import os
 import pytest
+import shutil
 
 from .. import create_app, db
 from ..config import TestingConfig
@@ -7,7 +9,8 @@ from ..models import User
 @pytest.fixture()
 def test_client():
     app = create_app(config_class=TestingConfig)
-    
+    UPLOAD_FOLDER = app.config['UPLOAD_FOLDER']
+     
     with app.test_client() as testing_client:
         
         with app.app_context():
@@ -19,6 +22,7 @@ def test_client():
             db.session.remove()
             db.drop_all()
             
+            shutil.rmtree(UPLOAD_FOLDER, ignore_errors=True)
         
 @pytest.fixture()
 def user():
@@ -28,6 +32,19 @@ def user():
     )
     
     user.set_password('passwordtest')
+    db.session.add(user)
+    db.session.commit()
+    
+    return user
+
+@pytest.fixture()
+def user2():
+    user = User(
+        username='usertest2',
+        email='test2@test.com'
+    )
+    
+    user.set_password('passwordtest2')
     db.session.add(user)
     db.session.commit()
     

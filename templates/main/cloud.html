@@ -1,5 +1,5 @@
 {% extends 'main/base.html' %}
-{% block title %} Cloud {% endblock title%}
+{% block title %} Cloud {{status}} {% endblock title%}
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="{{url_for('static',
@@ -9,6 +9,7 @@
 {% block content %}
 <div class="container">
     <div class="row justify-content-center mb-3 br">
+        {% if curr_user == user %}
         <div class="col-lg-3 mb-2 me-2">
             <div class="fm p-2 m-2">
                 <button type="button" class="btn btn-lg btn-primary w-100"
@@ -16,6 +17,7 @@
                     directorio</button>
             </div>
         </div>
+        {% endif %}
 
         {% for field, errors in form_create_dir.errors.items() %}
         <div class="col-sm-2 mb-2 me-2 alert alert-danger text-center
@@ -46,7 +48,8 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-
+        
+        {% if curr_user == user %}
         <div class="col-lg-3 mb-2 me-2">
             <div class="fm p-2 m-2">
                 <button type="button" class="btn btn-lg btn-primary w-100"
@@ -54,6 +57,7 @@
                     archivo</button>
             </div>
         </div>
+        {% endif %}
     </div>
 
     <div class="row justify-content-center">
@@ -85,15 +89,16 @@
             <div class="d-flex flex-column align-items-center text-break">
                 <img class="w-50 h-50 img-fluid mt-1" src="{{url_for('static',
                     filename='images/file-store.png')}}" alt="{{file.entry.name}}">
-
                 <a href="{{ url_for('main_bp.cloud_download_file', path=file.relpath, username=user.username, status=status ) }}" target="_blank" class="h4 p-2 text-decoration-none text-center" title="{{file.entry.name}}">{{file.entry.name|truncate(16)}}</a>
-                <a href="{{ url_for('main_bp.cloud_delete_file', path=file.relpath, username=user.username, status=status) }}" target="_blank" class="btn btn-primary" title="{{file.entry.name}}">Eliminar archivo</a>
-   
+                {% if curr_user == user %}
+                <a href="{{ url_for('main_bp.cloud_delete_file', path=file.relpath, username=user.username, status=status) }}" target="_blank" class="btn btn-danger" title="{{file.entry.name}}">Eliminar archivo</a>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
     </div>
 
+    {% if curr_user == user %}
     <div class="modals">
         <div class="modal fade" id="form_dir" tabindex="-1"
             aria-labelledby="crtdir" aria-hidden="true">
@@ -146,5 +151,6 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock content%}

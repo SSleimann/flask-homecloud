@@ -47,8 +47,8 @@ class EncriptedEntry(object):
     def _encrypt_path(self, path: str) -> bytes:
         path = path.encode('utf-8') 
         return encrypt_path(path)
-
-def get_path_folders_and_files(path: str) -> t.Tuple[t.List[os.DirEntry], t.List[os.DirEntry]]:
+    
+def get_path_folders_and_files(path: str) -> t.Tuple[t.List[EncriptedEntry], t.List[EncriptedEntry]]:
     files = []
     folders = []
     
@@ -74,7 +74,7 @@ def get_user_path(user: User,
     
 def is_own(user: User) -> None:
     if user != current_user:
-        abort(404, description='Not found!')
+        abort(404, description='Not found!!')
     
 def not_logged_required(f):
     @wraps(f)

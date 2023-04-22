@@ -21,7 +21,6 @@ class FileUploadForm(FlaskForm):
     next = HiddenField(default=nxt, name='next', id='next')
     submit = SubmitField('Subir archivo')
     
-    
 class CreateDirForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

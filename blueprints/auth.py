@@ -9,13 +9,13 @@ from flask import (
 from flask_login.utils import login_user, logout_user, login_required
 from sqlalchemy.exc import IntegrityError
 
-from . import db
-from .models import User
-from .forms import LoginForm, RegisterForm, LogoutForm
-from .utils import not_logged_required
+from .. import db
+from ..models import User
+from ..forms import LoginForm, RegisterForm, LogoutForm
+from ..utils import not_logged_required
 
 auth_bp = Blueprint('auth_bp', __name__,
-                        template_folder='templates/auth',
+                        template_folder='../templates/auth',
                         url_prefix='/auth',)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])

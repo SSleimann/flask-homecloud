@@ -48,9 +48,9 @@ def load_index_view(app):
         return redirect(url_for('main_bp.cloud_private'))
     
 def register_blueprints(app):
-    from .main import main_bp
+    from .blueprints.main import main_bp
     app.register_blueprint(main_bp)
     
-    from .auth import auth_bp
+    from .blueprints.auth import auth_bp
     app.register_blueprint(auth_bp)
     

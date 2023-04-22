@@ -5,13 +5,13 @@ from werkzeug.utils import secure_filename
 from flask import Blueprint, render_template, redirect, request, abort, flash, url_for, send_from_directory
 from flask_login.utils import login_required, current_user
 
-from .utils import get_path_folders_and_files, is_own, get_user_path, protected_path, encrypt_path
-from .forms import CreateDirForm, FileUploadForm, DeleteFileForm
-from .models import User
-from . import db
+from ..utils import get_path_folders_and_files, is_own, get_user_path, protected_path
+from ..forms import CreateDirForm, FileUploadForm, DeleteFileForm
+from ..models import User
+from .. import db
 
 main_bp = Blueprint('main_bp', __name__,
-                        template_folder='templates/main',
+                        template_folder='../templates/main',
                         url_prefix='/main')
 
 @main_bp.route('/cloud/public/', methods=['GET'])
@@ -36,6 +36,7 @@ def cloud_private(path, encpath):
         'folders': folders,
         'req': request,
         'user': current_user,
+        'curr_user': current_user,
         'form_create_dir': CreateDirForm(next=request.full_path),
         'form_upload_file': FileUploadForm(next=request.full_path),
         'path': encpath,
@@ -63,6 +64,7 @@ def cloud_public(username, path, encpath):
         'folders': folders,
         'req': request,
         'user': user,
+        'curr_user': current_user,
         'form_create_dir': CreateDirForm(next=request.full_path),
         'form_upload_file': FileUploadForm(next=request.full_path),
         'path': encpath,
@@ -174,13 +176,15 @@ def cloud_delete_file(status, username, path, encpath):
 @protected_path
 def cloud_download_file(status, username, path, encpath):
     user = db.one_or_404(db.select(User).filter_by(username=username), description='User not found!')
-    is_own(user)
-        
+    
     if not status in ['private', 'public']:
          abort(404)
-        
+    
     dpath = get_user_path(user, status, path)
     fpath, filename = dpath.rsplit('/', maxsplit=1)
+    
+    if status == 'private' and current_user.email != user.email:
+        abort(404, description='Este archivo no existe')
     
     if not os.path.exists(fpath):
         abort(404, description='Este archivo no existe')
