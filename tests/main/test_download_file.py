@@ -4,7 +4,7 @@ import io
 import typing as t
 
 from ...models import User
-from ...utils import get_path_folders_and_files
+from ...utils import get_path_files_and_folders
 
 T = t.TypeVar('T')
 
@@ -32,7 +32,7 @@ def test_download_private_file(test_client, user):
     initialize(test_client, user, 'private')
     
     user_path = os.path.join(user.get_private_user_path(), '')
-    files, _ = get_path_folders_and_files(user_path)
+    files, _ = get_path_files_and_folders(user_path)
     file_relpath = files[0].relpath
     
     res = test_client.get(
@@ -47,7 +47,7 @@ def test_download_public_file(test_client, user):
     initialize(test_client, user, 'public')
     
     user_path = os.path.join(user.get_public_user_path(), '')
-    files, _ = get_path_folders_and_files(user_path)
+    files, _ = get_path_files_and_folders(user_path)
     file_relpath = files[0].relpath
     
     res = test_client.get(
@@ -93,7 +93,7 @@ def test_download_private_file_invalid(test_client, user, user2):
     )
     
     user_path = os.path.join(user.get_private_user_path(), '')
-    files, _ = get_path_folders_and_files(user_path)
+    files, _ = get_path_files_and_folders(user_path)
     file_relpath = files[0].relpath
     
     res = test_client.get(

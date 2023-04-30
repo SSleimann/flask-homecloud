@@ -48,7 +48,7 @@ class EncriptedEntry(object):
         path = path.encode('utf-8') 
         return encrypt_path(path)
     
-def get_path_folders_and_files(path: str) -> t.Tuple[t.List[EncriptedEntry], t.List[EncriptedEntry]]:
+def get_path_files_and_folders(path: str) -> t.Tuple[t.List[EncriptedEntry], t.List[EncriptedEntry]]:
     files = []
     folders = []
     

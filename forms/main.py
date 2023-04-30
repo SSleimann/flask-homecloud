@@ -32,7 +32,7 @@ class CreateDirForm(FlaskForm):
     
     dir = StringField(
         'Nombre del directorio', 
-        validators=[ Length(1, 20), Regexp(r"^[\w.@+-]+\Z"), DataRequired()],
+        validators=[ Length(1, 20), Regexp(r"^[\w.@+ -]+\Z"), DataRequired()],
         render_kw={'placeholder': 'Nombre del directorio'}
     )
     
@@ -41,4 +41,13 @@ class CreateDirForm(FlaskForm):
     
 class DeleteFileForm(FlaskForm):
     submit = SubmitField('Eliminar archivo')
+    
+class RenameForm(FlaskForm):
+    name = StringField(
+        'Nombre', 
+        validators=[ Length(1, 20), Regexp(r"^[\w.@+ -]+\Z"), DataRequired()],
+        render_kw={'placeholder': 'Nombre'}
+    )
+    
+    submit = SubmitField('Renombrar')
     

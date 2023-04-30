@@ -8,7 +8,7 @@
 
 {% block content %}
 <div class="container">
-    <div class="row justify-content-center mb-3 br">
+    <div class="row justify-content-center mb-3">
         {% if curr_user == user %}
         <div class="col-lg-3 mb-2 me-2">
             <div class="fm p-2 m-2">
@@ -80,6 +80,11 @@
                     text-center">{{folder.entry.name|truncate(16)}}</a>
 
                 {% endif %}
+
+                {% if curr_user == user %}
+                <a href="{{ url_for('main_bp.cloud_delete_fl_fld', next=req.full_path, path=folder.relpath, username=user.username, status=status) }}" class="btn btn-danger mb-2" title="{{folder.entry.name}}">Eliminar carpeta</a>
+                <a href="{{ url_for('main_bp.cloud_rename_fl_fld', next=req.full_path, path=folder.relpath, username=user.username, status=status) }}" class="btn btn-secondary" title="{{folder.entry.name}}">Modificar carpeta</a>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -90,8 +95,10 @@
                 <img class="w-50 h-50 img-fluid mt-1" src="{{url_for('static',
                     filename='images/file-store.png')}}" alt="{{file.entry.name}}">
                 <a href="{{ url_for('main_bp.cloud_download_file', path=file.relpath, username=user.username, status=status ) }}" target="_blank" class="h4 p-2 text-decoration-none text-center" title="{{file.entry.name}}">{{file.entry.name|truncate(16)}}</a>
+                
                 {% if curr_user == user %}
-                <a href="{{ url_for('main_bp.cloud_delete_file', path=file.relpath, username=user.username, status=status) }}" target="_blank" class="btn btn-danger" title="{{file.entry.name}}">Eliminar archivo</a>
+                <a href="{{ url_for('main_bp.cloud_delete_fl_fld', next=req.full_path, path=file.relpath, username=user.username, status=status) }}" class="btn btn-danger mb-2" title="{{file.entry.name}}">Eliminar archivo</a>
+                <a href="{{ url_for('main_bp.cloud_rename_fl_fld', next=req.full_path, path=file.relpath, username=user.username, status=status) }}" class="btn btn-secondary" title="{{file.entry.name}}">Modificar archivo</a>
                 {% endif %}
             </div>
         </div>

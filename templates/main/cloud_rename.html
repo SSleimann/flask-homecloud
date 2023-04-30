@@ -33,11 +33,12 @@
         {% endwith %}
     </div>
     <form method="POST" class="d-flex align-items-center flex-column">   
-       <h1 class="h3 mb-3 fw-bold p-4">Estas seguro de borrar esto?</h1>
+       <h1 class="h3 mb-3 fw-bold p-4">Que nombre le quieres colocar?</h1>
 
         {{ form.hidden_tag() }}
 
-        {{ form.submit(class_="btn btn-lg btn-danger mb-2") }}
+        {{ form.name(class_="form-control w-25 mt-2 mb-4") }}
+        {{ form.submit(class_="btn btn-lg btn-primary mb-2") }}
 
     </form>
 
