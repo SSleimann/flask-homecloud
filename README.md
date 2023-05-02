@@ -12,7 +12,7 @@ This is a web application that allows its users to save files locally. he applic
 
 ## Features
 
-The application allows users to upload and download files, create, rename and delete folders, and share files and folders with other users. Users can log in and create an account to save their files in the cloud. Files are saved locally, can be used on a home network.
+The application allows users to upload, download, create, rename, delete, share files and folders with other users. Users can log in and create an account to save their files in the cloud. Files are saved locally, can be used on a home network.
 
 ## Usage
 
