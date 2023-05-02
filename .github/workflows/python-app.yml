@@ -30,7 +30,8 @@ jobs:
         python -m pip install --upgrade pip
         python -m venv env
         source env/bin/activate
-        pip install flake8 pytest
+        echo "VIRTUAL ENV:" $VIRTUAL_ENV
+        pip install flake8
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
