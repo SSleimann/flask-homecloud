@@ -17,7 +17,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.10"]
         
     steps:
     - uses: actions/checkout@v3
@@ -30,9 +30,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Set Python Path
-      run: |
-        echo "::set-env name=PYTHONPATH::home/runner/work/flask-homecloud"
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
