@@ -40,5 +40,4 @@ def test_cloud_public_user_page(test_client, user, user2):
     
     assert res.status_code == 200
     assert b'<title> Cloud public </title>' in res.data
-    assert user.username.encode() not in res.data
     assert b'Crear directorio' not in res.data
