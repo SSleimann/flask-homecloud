@@ -10,7 +10,7 @@
 <div class="w-100 m-auto">
     <div class="row justify-content-center mb-3">
         {% for field, errors in form.errors.items() %}
-        <div class="col-sm-2 mb-2 me-2 alert alert-danger text-center
+        <div class="col-md-2 mb-2 me-2 alert alert-danger text-center
             text-break">
             {{ errors[0] }}
         </div>
@@ -20,11 +20,11 @@
             {% if messages %}
                 {% for category, message in messages %}
                     {% if category == 'error' %}
-                        <div class="col-sm-2 mb-2 me-2 alert alert-danger text-center text-break">
+                        <div class="col-md-2 mb-2 me-2 alert alert-danger text-center text-break">
                             {{ message }}
                         </div>
                     {% else %}
-                        <div class="col-sm-2 mb-2 me-2 alert alert-info text-center text-break">
+                        <div class="col-md-2 mb-2 me-2 alert alert-info text-center text-break">
                             {{ message }}
                         </div>
                     {% endif %}
