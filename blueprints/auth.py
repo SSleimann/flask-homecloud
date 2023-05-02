@@ -9,7 +9,7 @@ from flask import (
 from flask_login.utils import login_user, logout_user, login_required
 from sqlalchemy.exc import IntegrityError
 
-from .. import db
+from ..app import db
 from ..models import User
 from ..forms import LoginForm, RegisterForm, LogoutForm
 from ..utils import not_logged_required

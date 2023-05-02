@@ -1,6 +1,6 @@
 import os
 
-from . import db
+from .app import db
 
 from flask import current_app
 from flask_login.mixins import UserMixin

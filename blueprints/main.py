@@ -9,7 +9,7 @@ from flask_login.utils import login_required, current_user
 from ..utils import get_path_files_and_folders, is_own, get_user_path, protected_path
 from ..forms import CreateDirForm, FileUploadForm, DeleteFileForm, RenameForm
 from ..models import User
-from .. import db
+from ..app import db
 
 main_bp = Blueprint('main_bp', __name__,
                         template_folder='../templates/main',

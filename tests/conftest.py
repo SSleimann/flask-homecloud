@@ -1,8 +1,7 @@
-import os
 import pytest
 import shutil
 
-from .. import create_app, db
+from ..app import create_app, db
 from ..config import TestingConfig
 from ..models import User
 

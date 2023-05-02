@@ -31,10 +31,9 @@ First you need to create a virtual environment. After that, you should:
    pip install -r requirements.txt
     ```
 
-3. Set the environment variables:
+3. Set environment variables if you want to set debug mode:
 
    ```bash
-   export FLASK_APP=__init__.py
    export FLASK_DEBUG=1
    ```
 
