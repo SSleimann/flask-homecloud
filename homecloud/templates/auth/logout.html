@@ -1,0 +1,26 @@
+{% extends 'auth/base.html' %}
+{% block title %} Salir de la sesion {% endblock title%}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/auth/logout.css')}}">
+{% endblock css %}
+
+{% block form_content %}
+    <div class="form-log w-100 m-auto">
+        {% block form_errors_and_messages %}
+            {{ super() }}
+        {% endblock form_errors_and_messages %}
+
+        <form method="post">
+            <div class="text-center">
+                <h1 class="h3 mb-3 fw-bold p-4">Quieres salir de la sesion?</h1>
+            </div>
+
+            {{ form.hidden_tag() }}
+
+            {{ form.submit(class_="w-100 btn btn-lg btn-primary") }}
+
+        </form>
+    </div>
+
+{% endblock form_content %}

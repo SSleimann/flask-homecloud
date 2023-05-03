@@ -1,0 +1,40 @@
+{% extends 'auth/base.html' %}
+{% block title %} Iniciar sesión {% endblock title%}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/auth/login.css')}}">
+{% endblock %}
+
+{% block form_content %}
+    <div class="form-sign w-100 m-auto">
+        {% block form_errors_and_messages %}
+            {{ super() }}
+        {% endblock form_errors_and_messages %}
+
+        <form method="post">   
+            <div class="text-center">
+                <h1 class="h3 mb-3 fw-bold p-4">Por favor inicia sesion</h1>
+            </div>
+
+            {{ form.hidden_tag() }}
+
+            <div class="col mb-2">
+                <div class="form-floating">
+                    {{ form.email(class_="form-control") }}
+                    {{ form.email.label }}
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="form-floating">
+                    {{ form.password(class_="form-control") }}
+                    {{ form.password.label }}
+                </div>
+            </div>
+
+            {{ form.submit(class_="w-100 btn btn-lg btn-primary") }}
+
+        </form>
+
+    </div>
+{% endblock form_content %}
