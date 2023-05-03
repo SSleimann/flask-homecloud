@@ -35,6 +35,7 @@ First you need to create a virtual environment. After that, you should:
 
    ```bash
    export FLASK_DEBUG=1
+   export FLASK_APP=homecloud.app
    ```
 
 4. Now you can run the server:
