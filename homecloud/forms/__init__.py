@@ -1,2 +1,2 @@
-from main import FileUploadForm, CreateDirForm, DeleteFileForm, RenameForm
-from auth import LoginForm, RegisterForm, LogoutForm
+from homecloud.forms.main import FileUploadForm, CreateDirForm, DeleteFileForm, RenameForm
+from homecloud.forms.auth import LoginForm, RegisterForm, LogoutForm
