@@ -1,8 +1,7 @@
 import os
-from pathlib import Path
 
-ROOT_DIR = Path(__file__).resolve().parent
-UPLOAD_FOLDER = 'media/uploads/'
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(ROOT_DIR, 'media/uploads/')
 
 class Config(object):
     TESTING = False
@@ -20,4 +19,4 @@ class TestingConfig(Config):
     DEBUG = True
     TESTING = True
     WTF_CSRF_ENABLED = False
-    UPLOAD_FOLDER = 'media/uploads_testing/'
+    UPLOAD_FOLDER = os.path.join(ROOT_DIR, 'media/uploads_testing/')

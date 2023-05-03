@@ -53,7 +53,7 @@ def test_download_public_file(test_client, user):
     res = test_client.get(
         '/main/cloud/download_file/public/usertest/path/{0}'.format(file_relpath)
     )
-    
+    print(res.data)
     assert res.headers['Content-Disposition'] == 'attachment; filename=test.txt'
     assert res.data == b"testing"
     assert res.status_code == 200
